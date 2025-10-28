@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 )
 
 func SendRequest(method string, url string, token string) (*http.Response, error) {
@@ -40,8 +41,12 @@ func main() {
 	resp, err = SendRequest("GET", url+"users/@me", token)
 	if err != nil {
 		log.Fatal(err)
+	} else if resp.StatusCode == 401 {
+		fmt.Println("Invalid Token!")
+		main()
+		os.Exit(0)
 	} else if resp.StatusCode != 200 {
-		log.Fatal("Invalid Token!")
+		log.Fatal(resp.Status)
 	}
 	defer resp.Body.Close()
 
